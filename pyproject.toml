@@ -7,16 +7,19 @@ license = "MIT License"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.10"  # Streamlit supports up to Python 3.10
 openai = "^1.14.3"
-langchain = "^0.1.13"
+langchain = "^0.95.1"  # Latest compatible version
+ollama = "^0.1.8"
 rich = "^13.7.1"
 python-dotenv = "^1.0.1"
 langchain-openai = "^0.1.1"
 pypdf = "^4.1.0"
 tiktoken = "^0.6.0"
-streamlit = "^1.32.2"
-ollama = "^0.1.8"
+
+[build-system]
+requires = ["poetry>=1.0"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.group.dev.dependencies]
 jupyter = "^1.0.0"

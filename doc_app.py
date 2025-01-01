@@ -7,36 +7,51 @@ from documents_llm.st_helpers import run_query
 # Load environment variables
 load_dotenv()
 
-# Load model parameters
-MODEL_NAME = os.getenv("MODEL_NAME")
+# Model and API Configuration
+MODEL_NAME = os.getenv("MODEL_NAME", "mixtral:latest")
+BASE_URL = os.getenv("BASE_URL", "http://localhost:11434/v1")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-OPENAI_URL = os.getenv("OPENAI_URL")
 
-st.title("🐍 VCF Document Analyzer")
+# Streamlit App
+st.title("PDF Analyzer App")
 st.write(
-    "This is a simple document analyzer that uses LLM models to summarize and answer questions about documents. "
-    "You can upload a PDF or text file and the model will summarize the document and answer questions about it."
+    "Upload a PDF to summarize or query using a large language model."
 )
 
+# Sidebar Input
 with st.sidebar:
-    st.header("Model")
-    model_name = st.text_input("Model name", value=MODEL_NAME)
-    temperature = st.slider("Temperature", value=0.1, min_value=0.0, max_value=1.0)
+    st.header("Configuration")
+    model_name = st.text_input("Model Name", value=MODEL_NAME)
+    temperature = st.slider("Temperature", 0.0, 1.0, 0.1)
+    st.subheader("Upload PDF")
+    uploaded_file = st.file_uploader("Choose a PDF file", type=["pdf"])
 
-    st.header("Document")
-    file = st.file_uploader("Upload a PDF file", type=["pdf"])
-    start_page = st.number_input("Start page:", value=0, min_value=0)
-    end_page = st.number_input("End page:", value=-1)
+    st.subheader("Page Range")
+    start_page = st.number_input("Start Page", min_value=0, value=0)
+    end_page = st.number_input("End Page", value=-1)
 
-    query_type = st.radio("Query type", ["Summarize", "Query"])
-    user_query = st.text_area("Query", value="What is the data used?") if query_type == "Query" else ""
+    query_type = st.radio("Task", ["Summarize", "Query"])
+
+if query_type == "Query":
+    user_query = st.text_area("Enter your query")
 
 if st.button("Run"):
-    if not file:
-        st.error("Please upload a file.")
+    if not uploaded_file:
+        st.error("Please upload a PDF file.")
     else:
-        result = run_query(
-            file, query_type == "Summarize", user_query, start_page, end_page,
-            model_name, OPENAI_API_KEY, OPENAI_URL, temperature
-        )
-        st.markdown(result)
+        with st.spinner("Processing..."):
+            try:
+                result = run_query(
+                    uploaded_file=uploaded_file,
+                    summarize=query_type == "Summarize",
+                    user_query=user_query if query_type == "Query" else "",
+                    start_page=start_page,
+                    end_page=end_page,
+                    model_name=model_name,
+                    base_url=BASE_URL,
+                    temperature=temperature,
+                )
+                st.success("Task Completed!")
+                st.text_area("Result", result, height=300)
+            except Exception as e:
+                st.error(f"An error occurred: {e}")

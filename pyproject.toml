@@ -7,8 +7,9 @@ license = "MIT License"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"  # Streamlit supports up to Python 3.10
-openai = "^1.14.3"
+python = "^3.10"  # Ensure you are using Python 3.10
+streamlit = "^1.26.0"
+openai = "^1.27.0"
 langchain = "^0.95.1"  # Latest compatible version
 ollama = "^0.1.8"
 rich = "^13.7.1"
@@ -16,17 +17,14 @@ python-dotenv = "^1.0.1"
 langchain-openai = "^0.1.1"
 pypdf = "^4.1.0"
 tiktoken = "^0.6.0"
-poetry lock
-poetry install
+streamlit-aggrid = "^0.3.4"  # Useful for data grids, optional
 
 [build-system]
-requires = ["poetry>=1.0"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.group.dev.dependencies]
-jupyter = "^1.0.0"
 pytest = "^8.1.1"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+jupyter = "^1.0.0"
+black = "^23.9.1"
+mypy = "^1.5.1"

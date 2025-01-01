@@ -1,15 +1,11 @@
 from pathlib import Path
-
 import streamlit as st
-
 from .document import load_pdf
 from .query import query_document
 from .summarize import summarize_document
 
 
-def save_uploaded_file(
-    uploaded_file: "UploadedFile", output_dir: Path = Path("/tmp")
-) -> Path:
+def save_uploaded_file(uploaded_file: "UploadedFile", output_dir: Path = Path("/tmp")) -> Path:
     output_path = Path(output_dir) / uploaded_file.name
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "wb") as f:
@@ -28,7 +24,6 @@ def run_query(
     openai_url: str,
     temperature: float,
 ) -> str:
-    # Saves the uploaded file to a temporary location, loads the PDF, and deletes the file
     st.write("Saving the uploaded file...")
     file_path = save_uploaded_file(uploaded_file, output_dir=Path("/tmp"))
     st.write("Loading the document...")

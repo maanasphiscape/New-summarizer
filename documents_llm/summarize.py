@@ -12,9 +12,6 @@ def summarize_document(
     base_url: str,
     temperature: float = 0.1,
 ) -> str:
-    pass
-
-    # Define LLM chain
     llm = ChatOpenAI(
         temperature=temperature,
         model_name=model_name,
@@ -32,7 +29,6 @@ def summarize_document(
     prompt = PromptTemplate.from_template(prompt_template)
 
     llm_chain = LLMChain(llm=llm, prompt=prompt)
-
     stuff_chain = StuffDocumentsChain(
         llm_chain=llm_chain, document_variable_name="document"
     )

@@ -1,3 +1,4 @@
+poetry lock
 [tool.poetry]
 name = "documents-llm"
 version = "0.1.0"

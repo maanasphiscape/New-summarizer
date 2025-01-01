@@ -1,9 +1,7 @@
 import os
 import time
-
 import streamlit as st
 from dotenv import load_dotenv
-
 from documents_llm.st_helpers import run_query
 
 # Load environment variables
@@ -14,7 +12,6 @@ MODEL_NAME = os.getenv("MODEL_NAME")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_URL = os.getenv("OPENAI_URL")
 
-
 st.title("🐍 VCF Document Analyzer")
 st.write(
     "This is a simple document analyzer that uses LLM models to summarize and answer questions about documents. "
@@ -23,67 +20,23 @@ st.write(
 
 with st.sidebar:
     st.header("Model")
-
     model_name = st.text_input("Model name", value=MODEL_NAME)
-
     temperature = st.slider("Temperature", value=0.1, min_value=0.0, max_value=1.0)
 
     st.header("Document")
-    st.subheader("Upload a PDF file")
     file = st.file_uploader("Upload a PDF file", type=["pdf"])
-    if file:
-        st.write("File uploaded successfully!")
+    start_page = st.number_input("Start page:", value=0, min_value=0)
+    end_page = st.number_input("End page:", value=-1)
 
-    st.subheader("Page range")
-
-    st.write(
-        "Select page range. Pages are numbered starting at 0. For end page, you can also use negative numbers to count from the end, e.g., -1 is the last page, -2 is the second to last page, etc."
-    )
-    col1, col2 = st.columns(2)
-    with col1:
-        start_page = st.number_input("Start page:", value=0, min_value=0)
-    with col2:
-        end_page = st.number_input("End page:", value=-1)
-
-    st.subheader("Query type")
-
-    query_type = st.radio("Select the query type", ["Summarize", "Query"])
-
-
-if query_type == "Query":
-    user_query = st.text_area(
-        "User query", value="What is the data used in this analysis?"
-    )
-
+    query_type = st.radio("Query type", ["Summarize", "Query"])
+    user_query = st.text_area("Query", value="What is the data used?") if query_type == "Query" else ""
 
 if st.button("Run"):
-    result = None
-    start = time.time()
-    if file is None:
+    if not file:
         st.error("Please upload a file.")
     else:
-        with st.status("Running...", expanded=True) as status:
-            try:
-                result = run_query(
-                    uploaded_file=file,
-                    summarize=query_type == "Summarize",
-                    user_query=user_query if query_type == "Query" else "",
-                    start_page=start_page,
-                    end_page=end_page,
-                    model_name=model_name,
-                    openai_api_key=OPENAI_API_KEY,
-                    openai_url=OPENAI_URL,
-                    temperature=temperature,
-                )
-                status.update(label="Done!", state="complete", expanded=False)
-
-            except Exception as e:
-                status.update(label="Error", state="error", expanded=False)
-                st.error(f"An error occurred: {e}")
-                result = ""
-
-        if result:
-            with st.container(border=True):
-                st.header("Result")
-                st.markdown(result)
-                st.info(f"Time taken: {time.time() - start:.2f} seconds", icon="⏱️")
+        result = run_query(
+            file, query_type == "Summarize", user_query, start_page, end_page,
+            model_name, OPENAI_API_KEY, OPENAI_URL, temperature
+        )
+        st.markdown(result)

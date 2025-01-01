@@ -16,6 +16,7 @@ langchain-openai = "^0.1.1"
 pypdf = "^4.1.0"
 tiktoken = "^0.6.0"
 streamlit = "^1.32.2"
+ollama = "^0.1.8"
 
 [tool.poetry.group.dev.dependencies]
 jupyter = "^1.0.0"
